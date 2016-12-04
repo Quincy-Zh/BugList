@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block title %}BugList - 详情{% endblock %}
+{% block page_content %}
+<div>
+{% if bug %}
+<h1>Bug&nbsp;#{{ bug.id }}</h1>
+<a href="{{ url_for('.edit', id=bug.id) }}">更新</a>
+{% if next_id %}
+<a href="{{ url_for('.details', id=next_id) }}">Next</a>
+{% endif %}
+<table class="table table-bordered">
+<tr>
+  <th>所属产品</th><td>{{ bug.product.title }}</td>
+  <th>来源</th><td>{{ bug.source.text }} @ {{ bug.version }}</td>
+</tr>
+<tr>
+  <th>提交</th>
+  <td>
+      {% if bug.reporter.fullname|length>0 %}
+      {{ bug.reporter.fullname }}
+      {% else %}
+      {{ bug.reporter.name }}
+      {% endif %}
+      @ {{ bug.date_submit|format_datetime }}
+  </td>
+  <th>最近更新</th><td>{{ bug.date_update|format_datetime }}</td>
+</tr>
+<tr><th>问题描述</th><td colspan="3">{{ bug.text|safe }}</td></tr>
+
+{#
+<tr><th>备注</th>
+    <td colspan="3">{% if bug.remark %}
+      {{ bug.remark }}
+      {% else %}
+      无
+      {% endif %}</td>
+</tr>
+#}
+<tr>
+  <th>处理进度</th><td>{{ bug.progress.text }}</td>
+  <th>责任人</th>{% if bug.handler.fullname|length>0 %}
+      <td>{{ bug.handler.fullname }}</td>
+      {% else %}
+      <td>{{ bug.handler.name }}</td>
+      {% endif %}
+</tr>
+<tr><th>原因分析</th><td colspan="3">{{ bug.ca|safe }}</td></tr>
+<tr><th>对策</th><td colspan="3">{{ bug.cm|safe }}</td></tr>
+</table>
+
+<ul id="myTab" class="nav nav-tabs">
+	<li class="active">
+		<a href="#comment" data-toggle="tab">讨论</a>
+	</li>
+	<li><a href="#record" data-toggle="tab">更新记录</a></li>
+</ul>
+
+<div id="myTabContent" class="tab-content">
+  <div class="tab-pane fade in" id="record">
+    <ul>
+    {% for record in bug.records %}
+      <li>{{ record.date_submit|format_datetime }} {{ record.user.name }}: {{ record.text }} </li>
+    {% endfor %}
+    </ul>
+  </div>
+
+  <div class="tab-pane fade in active" id="comment">
+  {% for comment in bug.comments %}
+    <blockquote>
+      <p>{{ comment.text }}</p>
+      <footer>{{ comment.user.name }} | {{ comment.date_submit|format_datetime }}</footer>
+    </blockquote>
+  {% endfor %}
+  {% if current_user.is_authenticated %}
+  {{ wtf.quick_form(form) }}
+  {% else %}
+  <p>要发表评论，请<a href="{{ url_for('auth.login', next=url_for('main.details', id=bug.id)) }}">登录</a></p>
+  {% endif %}
+  </div>
+</div>
+
+{% endif %}
+</div>
+
+{% endblock %}

@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block title %}BugList - 列表{% endblock %}
+    
+{% block page_content %}
+<div>
+过滤器
+<form action="{{ url_for('main.search') }} " method="POST">
+{{ filter.hidden_tag() }}
+<table class="table">
+  <tr>
+    <td>{{ filter.product.label }}</td><td>{{ filter.product(class='filter-control') }}</td>
+    <td>{{ filter.progress.label }}</td><td>{{ filter.progress(class='filter-control') }} </td>
+    <td>{{ filter.submit }}</td>
+  </tr>
+</table>
+</form>
+
+{% if bugs %}
+  {% if bugs|length > 0 %}
+  点击Bug编号，查看详情
+  <table class="table table-hover">
+    <thead>
+    <tr><th>No.</th><th>产品</th>{# <th>来源</th> #}<th>描述</th><th>状态</th></tr>
+    </thead>
+    <tbody>
+    {% for bug in bugs %}
+    <tr>
+      <td><a href="{{ url_for('main.details', id=bug.id) }}", target="_blank">#{{ bug.id }}</a></td>
+      <td>{{ bug.product.title }}/ {{ bug.product.spec }} </td>
+      {# <td>{{ bug.source.text }} </td> #}
+      <td>{{ bug.text|summary }}</td>
+      <td>{{ bug.progress.text }}</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  暂无记录
+  {% endif %}
+{% else %}
+请选择过滤器并点击“应用”
+{% endif %}
+</div>
+
+{% endblock %}

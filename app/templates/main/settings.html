@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+{% block title %}BugList - 设置{% endblock %}
+
+{% block page_content %}
+<div>
+
+<table class="table table-bordered">
+  <tr>
+    <th>问题来源</th>
+	<td>
+		<input id="source" /><button id="add_source">添加</button>
+		<ul id="source_lst">
+		</ul>
+	</td>
+  </tr>
+  <tr>
+    <th>处理进展</th>
+	<td>
+		<input id="progress" /><button id="add_progress">添加</button>
+		<ul id="progress_lst">
+		</ul>
+	</td>
+</table>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+
+<script src="/static/jquery-ui-1.12.1/external/jquery/jquery.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function()
+{
+	$.post("{{ url_for('main.settings') }}", 
+		{"cmd": "source"}, 
+		function(data)
+		{
+			if(data.result != undefined)
+			{
+				$(data.items).each(function (i, item)
+				{
+					add_item("source_lst", item[1]);
+				});
+			}
+		}
+	);
+	
+	$.post("{{ url_for('main.settings') }}", 
+		{"cmd": "progress"}, 
+		function(data)
+		{
+			if(data.result != undefined)
+			{
+				$(data.items).each(function (i, item)
+				{
+					add_item("progress_lst", item[1]);
+				});
+			}
+		}
+	);
+});
+
+function add_item(lst, txt)
+{
+	$("#" + lst).append("<li><i class=\"icon-remove\">x</i> " + txt + "</li>");
+}
+
+function settings(action, cmd)
+{
+	var action_lst = ["add", "del", "list"];
+	var cmd_lst = ["source", "progress"];
+	
+	if(action_lst.indexOf(action) == -1 || cmd_lst.indexOf(cmd) == -1)
+	{
+		console.log("参数错误");
+		return;
+	}
+	
+	var button_id = "#" + cmd_lst;
+	var txt = $(button_id).val();
+	if(txt.length == 0)
+		return;
+	
+	$.post("{{ url_for('main.settings') }}", 
+	       {"action": action, "cmd": cmd, "value": txt}, 
+		   function(data)
+	{
+		if(data.result != undefined)
+		{
+			add_item(cmd + "_lst", txt);
+		}
+		else
+		{
+			alert(data.err_msg);
+		}
+	});
+};
+
+$("#add_source").click(function ()
+{
+	settings("add", "source");
+});
+	
+</script>
+
+{% endblock %}

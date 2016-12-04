@@ -1,0 +1,62 @@
+{% extends "bootstrap/base.html" %}
+{% block title %}BugList{% endblock %}
+{% block head %} 
+{{ super() }} 
+<link rel="shortcut icon" href="{{ url_for('static', filename = 'favicon.ico') }}" type="image/x-icon"> 
+<link rel="icon" href="{{ url_for('static', filename = 'favicon.ico') }}" type="image/x-icon"> 
+{% endblock %}
+
+{% block navbar %}
+<div class="navbar navbar-inverse" role="navigation">
+<div class="container">
+<div class="navbar-header">
+<button type="button" class="navbar-toggle"
+data-toggle="collapse" data-target=".navbar-collapse">
+<span class="sr-only">Toggle navigation</span>
+<span class="icon-bar"></span>
+<span class="icon-bar"></span>
+<span class="icon-bar"></span>
+</button>
+<a class="navbar-brand" href="/">BugList</a>
+</div>
+<div class="navbar-collapse collapse">
+<ul class="nav navbar-nav">
+<li><a href="{{ url_for('main.create') }}">录入</a></li>
+<li><a href="{{ url_for('main.batch') }}">批量导入</a></li>
+</ul>
+<ul class="nav navbar-nav navbar-right">
+{% if current_user.is_authenticated %}
+<li><a href="{{ url_for('auth.profile') }}">{{ current_user.name }} [{{ current_user.role.name }}]</a></li>
+<li><a href="{{ url_for('auth.logout') }}">登出</a></li>
+{% if current_user.can(Permission.ADMINISTER) %}
+<li><a href="{{ url_for('main.settings') }}">设置</a></li>
+{% endif %}
+{% else %}
+<li><a href="{{ url_for('auth.login') }}">登录</a></li>
+<li><a href="{{ url_for('auth.register') }}">注册</a></li>
+{% endif %}
+</ul>
+</div>
+</div>
+</div>
+{% endblock %}
+{% block content %}
+<div class="container">
+  {% for message in get_flashed_messages() %}
+  <div class="alert alert-warning">
+  <button type="button" class="close" data-dismiss="alert">&times;</button>
+  {{ message }}
+  </div>
+  {% endfor %}
+
+{% block page_content %}{% endblock %}
+</div>
+
+{% block footprint_content %}
+<div class="col-sm-12">
+<p class="text-right">Power by <a href="http://flask.pocoo.org/" target="_blank">Flask</a>, <a href="http://getbootstrap.com/" target="_blank">Bootstrap</a>.</p>
+<p class="text-right">Dev: <a href="mailto:wangqy31@gmail.com">Quincy</a></p>
+<p class="text-right">Thanks FreeFavicon.com for Favicon</p>
+</div>
+{% endblock %}
+{% endblock %}
