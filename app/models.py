@@ -14,6 +14,16 @@ from flask_login import UserMixin, AnonymousUserMixin
 def load_user(user_id):
     return User.query.get(int(user_id))
 
+class SystemSettings(db.Model):
+    __tablename__ = 'settings'
+
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(64))
+    value = db.Column(db.String(64))
+    
+    def __repr__(self):
+        return '<Settings [%r]: [%r]>' % (self.title, self.value)
+    
 class Bug(db.Model):
     __tablename__ = 'bugs'
     id = db.Column(db.Integer, primary_key=True, autoincrement='ignore_fk')
@@ -43,6 +53,7 @@ class Bug(db.Model):
     date_update = db.Column(db.DateTime, default=datetime.now)
     
     remark = db.Column(db.String(128))
+    deleted = db.Column(db.Boolean, default=False)
     
     records = db.relationship('Record', backref='bug')
     comments = db.relationship('Comment', backref='bug')
@@ -167,6 +178,24 @@ class Progress(db.Model):
     
     def __repr__(self):
         return '<Progress %r>' % (self.text)
+    
+    @staticmethod 
+    def insert_data():
+        progress = (
+            u'未处理',
+            u'处理中',
+            u'验证中',
+            u'不处理',
+            u'已完成',
+            u'以挂起',
+        )
+        
+        for text in progress:
+            p = Progress.query.filter_by(text=text).first()
+            if p is None:
+                p = Progress(text=text)
+                db.session.add(p)
+        db.session.commit()
         
 class Source(db.Model):
     __tablename__ = 'source'
@@ -176,6 +205,23 @@ class Source(db.Model):
     
     def __repr__(self):
         return '<Source %r>' % (self.text)
+        
+    @staticmethod 
+    def insert_data():
+        progress = (
+            u'设计开发',
+            u'样机试装',
+            u'生产组装',
+            u'工程反馈',
+            u'用户反馈',
+        )
+        
+        for text in progress:
+            p = Source.query.filter_by(text=text).first()
+            if p is None:
+                p = Source(text=text)
+                db.session.add(p)
+        db.session.commit()
 
 class Record(db.Model):
     __tablename__ = 'records'

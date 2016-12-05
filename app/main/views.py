@@ -10,7 +10,7 @@ from . import main
 from .. import db
 from ..models import User, Bug, Record, \
     Product, Comment, Source, Progress, \
-    Permission
+    Permission, SystemSettings, Role
 from ..decorators import admin_required, permission_required 
 from .forms import BugForm, BatchForm, FilterForm, CommentForm
 
@@ -23,6 +23,19 @@ def safe_filename(filename):
         datetime.now().strftime('%Y%m%d%H%M%S'),
         ''.join(random.choice(a) for i in range(6)),
         filename.rsplit('.', 1)[1])
+
+@main.before_app_first_request
+def _before_first_request():
+    initialized = SystemSettings.query.filter_by(title='initialized').first()
+    
+    if not initialized:
+        Role.insert_roles()
+        Progress.insert_data()
+        Source.insert_data()
+        
+        initialized = SystemSettings(title='initialized', value='1')
+        db.session.add(initialized)
+        db.session.commit()
     
 @main.route('/')
 def index():
@@ -51,7 +64,7 @@ def index():
         query = query.filter(Bug.progress_id == progress_id)
         
     pagination = query.paginate(page, 
-        per_page=current_app.config['FLASKY_PER_PAGE'],
+        per_page=current_app.config['MATERIAL_COUNT_PER_PAGE'],
         error_out=False)
     bugs = pagination.items
     
@@ -114,7 +127,7 @@ def create():
         resp.set_cookie('username', 'the username')
         
         resp.set_cookie('source_last_submit', str(form.source.data))
-        resp.set_cookie('product_last_submit', str(form.product.data))
+        resp.set_cookie('product_last_submit', form.product.data)
         resp.set_cookie('version_last_submit', form.version.data)
         resp.set_cookie('handler_last_submit', str(form.handler.data))
         resp.set_cookie('progress_last_submit', str(form.progress.data))

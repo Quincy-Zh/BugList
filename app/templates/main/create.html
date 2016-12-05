@@ -40,7 +40,7 @@
 <div class="form-group">
 <div class="col-sm-offset-2 col-sm-10">
 	{% if current_user.can(Permission.HANDLE) %}
-	<div class="alert alert-info">您属于【工程师】，可以一并填写“原因分析”及“问题对策”意见后一同提交，当然也可不填写。</div>
+	<div class="alert alert-info">您具有“处理”权限，可以一并填写“原因分析”及“问题对策”意见后一同提交，当然也可不填写。</div>
 	{% endif %}
 	{{ form.submit(class='btn btn-primary') }}
 </div>

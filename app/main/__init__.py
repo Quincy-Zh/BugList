@@ -4,6 +4,7 @@
 from flask import Blueprint
 from ..models import Permission
 
+MAX_LINE_LENGTH = 30
 main = Blueprint('main', __name__)
 
 from . import views, errors
@@ -16,12 +17,18 @@ def format_datetime(value):
 def summary(html_text):
     start = html_text.find('<p>')
     end = html_text.find('</p>')
-    if start > -1 and end > 3:
-        txt = html_text[start+3: end]
+    if start >= 0 and end > 3:
+        if end > MAX_LINE_LENGTH:
+            end  = MAX_LINE_LENGTH
+        pos1 = html_text.find(u'。')
+        if pos1 > -1 and pos1 < end:
+            end = pos1
+            
+        txt = html_text[start+3: end] + ' ...'
     else:
-        txt = html_text
+        txt = html_text[: MAX_LINE_LENGTH].strip()
     
-    return txt[: 20].strip()
+    return txt
 
 @main.app_context_processor 
 def inject_permissions(): 
