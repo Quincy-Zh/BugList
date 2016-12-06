@@ -11,7 +11,7 @@ from . import views, errors
 
 @main.app_template_filter()
 def format_datetime(value):
-    return value.strftime('%Y-%m-%d %H:%M:%S')
+    return value.strftime('%Y-%m-%d %H:%M')
     
 @main.app_template_filter()
 def summary(html_text):
@@ -26,7 +26,7 @@ def summary(html_text):
             
         txt = html_text[start+3: end] + ' ...'
     else:
-        txt = html_text[: MAX_LINE_LENGTH].strip()
+        txt = html_text[: MAX_LINE_LENGTH].strip() + ' ...'
     
     return txt
 

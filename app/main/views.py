@@ -56,9 +56,9 @@ def index():
         page = 1
         
     if product_id != -1:
-        query = Bug.query.filter(Bug.product_id==product_id)
+        query = Bug.query.filter(Bug.product_id==product_id).order_by(Bug.id.desc())
     else:
-        query = Bug.query
+        query = Bug.query.order_by(Bug.id.desc())
     
     if progress_id != -1:
         query = query.filter(Bug.progress_id == progress_id)
@@ -99,6 +99,7 @@ def create():
     if form.validate_on_submit():
         product = Product.query.filter_by(title=form.product.data).first()
         if not product:
+            # 查不到现有产品的，新增之
             product = Product(title=form.product.data)
             db.session.add(product)
             db.session.commit()

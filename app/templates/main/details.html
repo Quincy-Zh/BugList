@@ -18,12 +18,12 @@
 <tr>
   <th>提交</th>
   <td>
-      {% if bug.reporter.fullname|length>0 %}
-      {{ bug.reporter.fullname }}
-      {% else %}
+      {% if bug.reporter_id %}
       {{ bug.reporter.name }}
+      {% else %}
+      未指定
       {% endif %}
-      @ {{ bug.date_submit|format_datetime }}
+      //{{ bug.date_submit|format_datetime }}
   </td>
   <th>最近更新</th><td>{{ bug.date_update|format_datetime }}</td>
 </tr>
@@ -40,10 +40,10 @@
 #}
 <tr>
   <th>处理进度</th><td>{{ bug.progress.text }}</td>
-  <th>责任人</th>{% if bug.handler.fullname|length>0 %}
-      <td>{{ bug.handler.fullname }}</td>
-      {% else %}
+  <th>责任人</th>{% if bug.handler_id %}
       <td>{{ bug.handler.name }}</td>
+      {% else %}
+      <td>未指定</td>
       {% endif %}
 </tr>
 <tr><th>原因分析</th><td colspan="3">{{ bug.ca|safe }}</td></tr>
