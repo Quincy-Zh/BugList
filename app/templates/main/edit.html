@@ -13,6 +13,9 @@
 <form method="POST" class="form-horizontal">
 {{ form.hidden_tag() }}
 <div class="form-group">
+<div class="col-sm-offset-2 col-sm-10">{{ form.submit(class='btn btn-primary') }}</div>
+</div>
+<div class="form-group">
 	{{ form.source.label(class='col-sm-2 control-label') }} 
 	<div class="col-sm-2">{{ form.source(class='form-control') }}</div>
 	{{ form.product.label(class='col-sm-2 control-label') }} 

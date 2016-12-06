@@ -13,7 +13,7 @@
 <table class="table table-bordered">
 <tr>
   <th>所属产品</th><td>{{ bug.product.title }}</td>
-  <th>来源</th><td>{{ bug.source.text }} @ {{ bug.version }}</td>
+  <th>来源</th><td>{{ bug.source.text }} {%if bug.version|length > 0 %} @ {{ bug.version }} {% endif %}</td>
 </tr>
 <tr>
   <th>提交</th>

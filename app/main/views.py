@@ -69,7 +69,7 @@ def index():
     bugs = pagination.items
     
     return render_template('main/index.html', 
-        products=Product.query.all(),
+        products=Product.query.order_by(Product.title).all(),
         product_id=product_id,
         progs=Progress.query.all(), 
         progress_id=progress_id,
@@ -241,21 +241,26 @@ def batch():
         
     if form.validate_on_submit():
         lines = form.text.data.split('\n')
-        count = 0
+        count = 1
         bugs = []
+                
+        product = Product.query.filter_by(title=form.product.data).first()
+        if not product:
+            product = Product(title=form.product.data)
+            db.session.add(product)
+            db.session.commit()
+                
         for line in lines:
             line = line.strip()
-            
             if len(line) == 0:
                 continue
                 
             items = line.split('\t')
             if len(items) != 3:
-                flash(u'格式错误 %d' % len(items))
-                
+                flash(u'第{0}行，格式错误'.format(count))
                 return render_template('main/batch.html', form=form)
-                
-            bug = Bug(product_id=form.product.data, 
+            
+            bug = Bug(product_id=product.id, 
                 reporter_id=form.reporter.data,
                 handler_id=form.handler.data,
                 text=items[0],
@@ -272,7 +277,7 @@ def batch():
             db.session.add(bug)
             db.session.commit()
         
-            rec = Record(text=u'批量导入', bug=bug, user=current_user)
+            rec = Record(text=u'导入', bug=bug, user=current_user)
             
             db.session.add(rec)
             db.session.commit()
@@ -349,8 +354,8 @@ def settings():
 @main.route('/product_list')
 def product_list():
     keyword = request.args.get('term', '')
-    products = Product.query.filter(Product.title.like('%{0}%'.format(keyword))).all()
-    response = make_response(jsonify(['{0}'.format(p.title) for p in products]))
+    products = Product.query.filter(Product.title.like(u'%{0}%'.format(keyword))).all()
+    response = make_response(jsonify([u'{0}'.format(p.title) for p in products]))
     
     # 跨域访问
     # response.headers['Access-Control-Allow-Origin'] = '*'
