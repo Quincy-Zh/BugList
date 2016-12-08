@@ -22,11 +22,15 @@ def create_app(config_name):
     config[config_name].init_app(app)
     
     bootstrap.init_app(app)
-    cdn_bootstrap = WebCDN('/static/bootstrap-3.3.7/')
-    cdn_jquery = WebCDN('/static/jquery/1.12.4/')
-
-    app.extensions['bootstrap']['cdns']['bootstrap'] = cdn_bootstrap
-    app.extensions['bootstrap']['cdns']['jquery'] = cdn_jquery
+    
+    if app.config.has_key('USER_DEF_CDN_BOOTSTRAP'):
+        cdn_bootstrap = WebCDN(app.config['USER_DEF_CDN_BOOTSTRAP'])
+        app.extensions['bootstrap']['cdns']['bootstrap'] = cdn_bootstrap
+        
+        
+    if app.config.has_key('USER_DEF_CDN_JQUERY'):
+        cdn_jquery = WebCDN(app.config['USER_DEF_CDN_JQUERY'])
+        app.extensions['bootstrap']['cdns']['jquery'] = cdn_jquery
     
     db.init_app(app)
     login_manager.init_app(app)
