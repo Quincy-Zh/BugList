@@ -37,8 +37,9 @@ def _before_first_request():
         db.session.add(initialized)
         db.session.commit()
     
-@main.route('/')
+@main.route('/', methods=['GET', 'POST'])
 def index():
+    form = FilterForm()
     
     try:
         product_id = int(request.args.get('product'))

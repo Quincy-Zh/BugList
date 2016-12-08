@@ -57,6 +57,8 @@ class BatchForm(FlaskForm):
 class FilterForm(FlaskForm):
     product = SelectField(u'归属产品', coerce=int)
     progress = SelectField(u'进展', coerce=int)
+    reporter = SelectField(u'报告人', coerce=int)
+    handler = SelectField(u'处理工程师', coerce=int)
     
     submit = SubmitField(u'过滤')
     
@@ -64,6 +66,10 @@ class FilterForm(FlaskForm):
         super(FilterForm, self).__init__(*args, **kwargs)
         self.product.choices = [(product.id, product.title) for product in Product.query.group_by(Product.title).all()]
         self.progress.choices = [(p.id, p.text) for p in Progress.query.all()]
+        self.reporter.choices = [(user.id, '%s' % user.name if user.name is not None else user.name) for user in User.query.order_by(User.name.desc()).all()]
+        self.reporter.insert(0, (-1, u'不指定'))
+        self.handler.choices = [(user.id, '%s' % user.name if user.name is not None else user.name) for user in User.query.order_by(User.name.desc()).all()]
+        self.handler.insert(0, (-1, u'不指定'))
         
 class CommentForm(FlaskForm):
     text = StringField(u'发表评论', widget=TextArea(), validators=[Required(), Length(1, 128)])
