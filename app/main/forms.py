@@ -67,9 +67,9 @@ class FilterForm(FlaskForm):
         self.product.choices = [(product.id, product.title) for product in Product.query.group_by(Product.title).all()]
         self.progress.choices = [(p.id, p.text) for p in Progress.query.all()]
         self.reporter.choices = [(user.id, '%s' % user.name if user.name is not None else user.name) for user in User.query.order_by(User.name.desc()).all()]
-        self.reporter.insert(0, (-1, u'不指定'))
+        self.reporter.choices.insert(0, (-1, u'不指定'))
         self.handler.choices = [(user.id, '%s' % user.name if user.name is not None else user.name) for user in User.query.order_by(User.name.desc()).all()]
-        self.handler.insert(0, (-1, u'不指定'))
+        self.handler.choices.insert(0, (-1, u'不指定'))
         
 class CommentForm(FlaskForm):
     text = StringField(u'发表评论', widget=TextArea(), validators=[Required(), Length(1, 128)])
