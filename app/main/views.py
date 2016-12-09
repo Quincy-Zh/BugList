@@ -37,45 +37,9 @@ def _before_first_request():
         db.session.add(initialized)
         db.session.commit()
     
-@main.route('/', methods=['GET', 'POST'])
+@main.route('/')
 def index():
-    form = FilterForm()
-    
-    try:
-        product_id = int(request.args.get('product'))
-    except:
-        product_id = -1
-        
-    try:
-        progress_id = int(request.args.get('progress'))
-    except:
-        progress_id = -1
-        
-    try:
-        page = int(request.args.get('page'))
-    except:
-        page = 1
-        
-    if product_id != -1:
-        query = Bug.query.filter(Bug.product_id==product_id).order_by(Bug.id.desc())
-    else:
-        query = Bug.query.order_by(Bug.id.desc())
-    
-    if progress_id != -1:
-        query = query.filter(Bug.progress_id == progress_id)
-        
-    pagination = query.paginate(page, 
-        per_page=current_app.config['MATERIAL_COUNT_PER_PAGE'],
-        error_out=False)
-    bugs = pagination.items
-    
-    return render_template('main/index.html', 
-        products=Product.query.order_by(Product.title).all(),
-        product_id=product_id,
-        progs=Progress.query.all(), 
-        progress_id=progress_id,
-        bugs=bugs, 
-        pagination=pagination)
+    return render_template('main/index.html')
 
 @main.route('/create', methods=['GET', 'POST'])
 @login_required

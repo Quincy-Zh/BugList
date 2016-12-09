@@ -23,12 +23,29 @@ class Config:
     @staticmethod
     def init_app(app):
         pass
-
+        
 class DevelopmentConfig(Config):
     DEBUG = True
     
     SQLALCHEMY_DATABASE_URI = os.environ.get('DEV_DATABASE_URL') or 'sqlite:///' + os.path.join(basedir, 'data-dev.sqlite')
     
+    @classmethod
+    def init_app(cls, app):
+        Config.init_app(app)
+        
+        import logging
+        from logging.handlers import RotatingFileHandler
+        # 日志，循环记录，最大日志文件4k，循环文件数量3
+        handler = RotatingFileHandler(os.path.join(basedir, 'buglist.log'), maxBytes=4096, backupCount=3)
+        
+        # 日志格式
+        formatter = logging.Formatter('%(name)s - %(asctime)s - %(levelname)s - %(message)s')
+        handler.setFormatter(formatter)
+        handler.setLevel(logging.INFO)
+        
+        app.logger.addHandler(handler)
+        
+        
 class TestingConfig(Config):
     TESTING = True
     SQLALCHEMY_DATABASE_URI = os.environ.get('TEST_DATABASE_URL') or 'sqlite:///' + os.path.join(basedir, 'data-test.sqlite')

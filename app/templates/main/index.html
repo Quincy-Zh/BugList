@@ -34,14 +34,14 @@ $(document).ready(function(){
 	var url='http://jd911.ygct.com:8081/api/list/bugs';
 	var param=[];
 	
-	if($("#product").val() != -1)
-		param.append("product_id="+$("#product").val());
+	if($("#product").val() != "-1")
+		param.push("product_id="+$("#product").val());
 		
-	if($("#source").val() != -1)
-		param.append("product_id="+$("#source").val());
+	if($("#source").val() != "-1")
+		param.push("product_id="+$("#source").val());
 		
-	if($("#progress").val() != -1)
-		param.append("product_id="+$("#progress").val());
+	if($("#progress").val() != "-1")
+		param.push("product_id="+$("#progress").val());
 		
 	if(param.length != 0)
 	    url = url + "?" + param.join("&");
@@ -55,7 +55,6 @@ $(document).ready(function(){
       }
       else 
       {
-	    
 	    console.log('Page:' + data.page);
 	    console.log('Count:' + data.count);
 	    console.log('Page size:' + data.page_size);
@@ -87,8 +86,6 @@ $(document).ready(function(){
 {% block page_content %}
 <div>
 <div class="row">
-<form class="form-inline">
-
 <div class="form-group">
 <label class="control-label" for="product">归属产品</label>
 <select class="form-control" id="product" name="product_id">
@@ -107,7 +104,6 @@ $(document).ready(function(){
 <div class="form-group">
 <button class="btn btn-primary" id="apply">过滤</button>
 </div>
-</form>
 </div>
 
 <div class="row">
