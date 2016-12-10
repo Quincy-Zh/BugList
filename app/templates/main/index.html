@@ -9,7 +9,7 @@
 
 <script type="text/javascript">
 function fetch(category) {
-  $.get('http://jd911.ygct.com:8081/api/list/' + category, function(data) {
+  $.get('/api/list/' + category, function(data) {
     if(data.errormsg != undefined)
     {
       console.log('Errrrr');
@@ -23,30 +23,21 @@ function fetch(category) {
   });
 }
 
-$(document).ready(function(){
-  fetch("product");
-  fetch("source");
-  fetch("progress");
-  
-  $("#table").hide();
-  
-  $("#apply").click(function(){
-	var url='http://jd911.ygct.com:8081/api/list/bugs';
+function get_url(page) {
+	var url='/api/list/bugs';
 	var param=[];
 	
-	if($("#product").val() != "-1")
-		param.push("product_id="+$("#product").val());
-		
-	if($("#source").val() != "-1")
-		param.push("product_id="+$("#source").val());
-		
-	if($("#progress").val() != "-1")
-		param.push("product_id="+$("#progress").val());
-		
-	if(param.length != 0)
-	    url = url + "?" + param.join("&");
+	param.push("page="+page);
+	param.push("product="+$("#product").val());
+	param.push("source="+$("#source").val());
+	param.push("progress="+$("#progress").val());
+	url = url + "?" + param.join("&");
 	
-	console.log(url);
+	return url;
+}
+	
+function request_page(page) {
+	var url = get_url(page);
 	
     $.get(url, function(data) {
       if(data.errormsg != undefined)
@@ -55,28 +46,72 @@ $(document).ready(function(){
       }
       else 
       {
-	    console.log('Page:' + data.page);
-	    console.log('Count:' + data.count);
-	    console.log('Page size:' + data.page_size);
-		
-		if(data.count > 0) 
+		if(data.items.length > 0) 
 		{
-		  $("#no_record").hide();
-		  $("#table").show();
+			$("#no_record").hide();
+			$("#table").show();
+			
+			$("#table tbody tr").remove();
+
+			$.each(data.items, function (index, item){
+			  var html='<tr><td><a href="/details/' + item.id + '", target="_blank">' + item.id + '</a></td><td>' + item.product + '</td><td>' + item.text + '</td><td>' + item.progress + '</td></tr>';
+			  $("#tbl_bugs").append(html);
+			});
+			
+			// 分页
+			page_count = Math.ceil(data.count/data.page_size);
+
+			var html2 = '<ul class="pagination">';
+			if(data.page == 1) 
+			{
+				html2 += '<li class="disabled"><a href="javascript:;"> <<上一页 </a></li>';
+			}
+			else
+			{
+				html2 += '<li><a href="javascript:request_page(' + (data.page - 1) + ');"> <<上一页 </a></li>';
+			}
+			
+			for(var i = 1; i <= page_count; ++i)
+			{
+				if(data.page == i)
+				{
+					html2 += '<li class="active"><a href="javascript:;"> ' + i + ' </a></li>';
+				}
+				else
+				{
+					html2 += '<li><a href="javascript:request_page(' + (i) + ');"> ' + i + ' </a></li>';
+				}
+			}
+			
+			if(data.page < page_count)
+			{
+				html2 += '<li><a href="javascript:request_page(' + (data.page + 1) + ');"> 下一页>> </a></li>';
+			}
+			else
+			{
+				html2 += '<li class="disabled"> <a href="javascript:;"> 下一页>> </a></li>';
+			}
+			
+			$("#pagination").html(html2);
 		}
 		else
 		{
 		  $("#no_record").show();
 		  $("#table").hide();
 		}
-		$.each(data.items, function (index, item){
-          var html='<tr><td><a href="/details/' + item.id + '", target="_blank">' + item.id + '</a></td><td>' + item.product + '</td><td>' + item.text + '</td><td>' + item.progress + '</td></tr>';
-		  $("#tbl_bugs").append(html);
-		});
 	  }
 	});
-	
-	return false;
+}
+
+$(document).ready(function(){
+  fetch("product");
+  fetch("source");
+  fetch("progress");
+  
+  $("#table").hide();
+  
+  $("#apply").click(function(){
+	request_page(1);
   });
 });
 </script>
@@ -115,8 +150,8 @@ $(document).ready(function(){
     <tbody>
     </tbody>
   </table>
-  
   <div class="alert alert-info">点击Bug编号，查看详情</div>
+  <div id="pagination"></div>
 </div>
 <div class="alert alert-info" id="no_record">无记录</div>
 </div>
