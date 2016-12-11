@@ -6,6 +6,8 @@ from datetime import datetime
 import random
 
 from flask import current_app, request, redirect, url_for, make_response, jsonify
+from ..main import summary
+
 from . import api
 from ..models import User, Bug, Record, \
     Product, Comment, Source, Progress, \
@@ -65,16 +67,26 @@ def list(title):
             per_page=current_app.config['MATERIAL_COUNT_PER_PAGE'],
             error_out=False)
 
-        items = [{'id': b.id, 'text': b.text, 'product': b.product.title, 'progress': b.progress.text} for b in pagination.items]
-        print(pagination.total)
-        print(pagination.has_prev)
-        print(pagination.has_next)
-
+        items = [{'id': b.id, 'text': summary(b.text), 'product': b.product.title, 'progress': b.progress.text} for b in pagination.items]
+    
         result = {'items': items,
             'count': pagination.total,
             'page_size': current_app.config['MATERIAL_COUNT_PER_PAGE'],
-            'page': page
-            }
+            'page': page}
+            
+    elif title.lower() == 'bug':
+        try:
+            id = int(request.args.get('id'))
+        except:
+            id = -1
+        
+        bug = Bug.query.filter_by(id=id).first()
+        
+        if not bug:
+            result = {'errormsg': 'Bug id not found.'}
+        else:
+            result = {'id': bug.id, 'text': bug.text, 'product': bug.product.title, 'progress': bug.progress.text}
+            
     else:
         current_app.logger.debug(u'"{0}" Not Found.'.format(title))
         result = {'errormsg': 'title not found.'}
