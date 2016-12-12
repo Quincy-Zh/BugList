@@ -67,7 +67,7 @@ function request_page(page) {
 			$("#table tbody tr").remove();
 
 			$.each(data.items, function (index, item){
-				var html='<tr><td><a href="javascript:show_details(' + item.id + ');", target="_blank">' + item.id + '</a></td><td>' + item.product + '</td><td>' + item.text + '</td><td>' + item.progress + '</td></tr>';
+				var html='<tr><td><a href="javascript:show_details(' + item.id + ');">' + item.id + '</a></td><td>' + item.product + '</td><td>' + item.text + '</td><td>' + item.progress + '</td></tr>';
 				$("#tbl_bugs").append(html);
 			});
 			
@@ -92,7 +92,7 @@ function request_page(page) {
 				}
 				else
 				{
-					html2 += '<li><a href="javascript:request_page(' + (i) + ');"> ' + i + ' </a></li>';
+					html2 += '<li><a href="javascript:request_page(' + i + ');"> ' + i + ' </a></li>';
 				}
 			}
 			
