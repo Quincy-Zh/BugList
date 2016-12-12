@@ -67,7 +67,10 @@ def list(title):
             per_page=current_app.config['MATERIAL_COUNT_PER_PAGE'],
             error_out=False)
 
-        items = [{'id': b.id, 'text': summary(b.text), 'product': b.product.title, 'progress': b.progress.text} for b in pagination.items]
+        items = [{'id': b.id, 
+            'text': summary(b.text), 
+            'product': b.product.title, 
+            'progress': b.progress.text} for b in pagination.items]
     
         result = {'items': items,
             'count': pagination.total,
@@ -85,7 +88,12 @@ def list(title):
         if not bug:
             result = {'errormsg': 'Bug id not found.'}
         else:
-            result = {'id': bug.id, 'text': bug.text, 'product': bug.product.title, 'progress': bug.progress.text}
+            result = {'id': bug.id, 
+                'text': bug.text, 
+                'product': bug.product.title, 
+                'analysis': bug.ca,
+                'solution': bug.cm,
+                'progress': bug.progress.text}
             
     else:
         current_app.logger.debug(u'"{0}" Not Found.'.format(title))

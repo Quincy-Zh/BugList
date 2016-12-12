@@ -39,9 +39,17 @@ function show_details(id)
 	$.get(url, function(data) {
 		if(data.errormsg === undefined)
 		{
+			var analysis = '<暂无>';
+			var solution = '<暂无>';
+			
+			if(data.analysis.length > 0) analysis = data.analysis;
+			if(data.solution.length > 0) solution = data.solution;
+			
 			var html = '<p><strong>所属产品</strong>：' + data.product + '</p>' 
 				+ '<p><strong>处理进展</strong>：' + data.progress + '</p>' 
-				+ '<p><strong>问题描述</strong>：<br />' + data.text + '</p>'
+				+ '<p><strong>问题描述</strong><br />' + data.text + '</p>'
+				+ '<p><strong>原因分析</strong><br />' + analysis + '</p>'
+				+ '<p><strong>处理对策</strong><br />' + solution + '</p>'
 				+ '<p><a href="/edit/' + data.id + '" target="_blank" class="btn btn-primary">编辑</a></p>';
 
 			$('#modal_body').html(html);
@@ -178,7 +186,7 @@ $(document).ready(function(){
     <tbody>
     </tbody>
   </table>
-  <div class="alert alert-info">点击Bug编号，查看详情</div>
+  <!-- <div class="alert alert-info">点击Bug编号，查看详情</div> -->
   <div id="pagination"></div>
 </div>
 <div class="alert alert-info" id="no_record">无记录</div>
